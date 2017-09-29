@@ -24,16 +24,48 @@ function preload () {
 
 }
 
+var spaceField;
+var ship;
+var cursors;
+
 function create () {
 
+    //Initiating Arcade Physics
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //Creating Background
-    game.add.sprite(0, 0, 'space');
+    spaceField = game.add.tileSprite(0, 0, 800, 600, 'space');
 
+    //Creating the player's ship
+    ship = game.add.sprite(10, 240, 'ship');
+    ship.scale.setTo(1,1);
+
+    game.physics.enable(ship, Phaser.Physics.ARCADE);
+
+    ship.body.drag.set(100);
+    ship.body.collideWorldBounds = true;
+
+    //Create the keyboard keys
+    cursors = game.input.keyboard.createCursorKeys();
 }
 
 function update () {
+
+    //Scroll the background
+    spaceField.tilePosition.x += -10;
+
+    //Define the keyboard commands
+    ship.body.velocity.y = 0
+
+    if (cursors.up.isDown) {
+        ship.body.velocity.y = -300;
+    } 
+    else if (cursors.down.isDown) {
+        ship.body.velocity.y = 300;
+    } else {
+        ship.animations.stop();
+        ship.body.acceleration.set(0);
+    }
 
 }
 
