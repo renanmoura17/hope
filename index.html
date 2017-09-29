@@ -1,0 +1,43 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+	<meta charset="UTF-8" />
+	<title>Hope</title>
+    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+function preload () {
+
+    game.load.image('space', 'assets/space.png');
+    game.load.image('ship', 'assets/ship.png');
+    game.load.image('alien', 'assets/alien.png');
+
+}
+
+function create () {
+
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+
+    //Creating Background
+    game.add.sprite(0, 0, 'space');
+
+}
+
+function update () {
+
+}
+
+</script>
+
+</body>
+</html>
