@@ -3,7 +3,7 @@
 <head> 
 	<meta charset="UTF-8" />
 	<title>Hope</title>
-    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+    <script src="phaser/phaser.min.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -14,19 +14,22 @@
 
 <script type="text/javascript">
 
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
 
 function preload () {
 
     game.load.image('space', 'assets/space.png');
     game.load.image('ship', 'assets/ship.png');
+    game.load.image('bullet', 'assets/bullet.png');
     game.load.image('alien', 'assets/alien.png');
 
 }
 
 var spaceField;
 var ship;
+var weapon;
 var cursors;
+var fireButton;
 
 function create () {
 
@@ -45,8 +48,21 @@ function create () {
     ship.body.drag.set(100);
     ship.body.collideWorldBounds = true;
 
-    //Create the keyboard keys
+    //Create the ship's weapon
+    weapon = game.add.weapon(5, 'bullet');
+
+    weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS //The bullet will be killed if it leaves the world area
+    weapon.bulletSpeed = 800;
+    weapon.fireRate = 100;
+
+    //Associate the weapon with the ship
+    weapon.trackSprite(ship, 90, 47, true);
+
+    //Create the movement keys
     cursors = game.input.keyboard.createCursorKeys();
+
+    //Create the fire button
+    fireButton = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
 }
 
 function update () {
@@ -67,6 +83,15 @@ function update () {
         ship.body.acceleration.set(0);
     }
 
+    // //Check if the user is trying to shoot
+    if (fireButton.isDown) {
+        weapon.fire();
+    }
+
+}
+
+function render () {
+    // weapon.debug();
 }
 
 </script>
