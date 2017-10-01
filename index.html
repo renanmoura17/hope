@@ -21,15 +21,20 @@ function preload () {
     game.load.image('space', 'assets/space.png');
     game.load.image('ship', 'assets/ship.png');
     game.load.image('bullet', 'assets/bullet.png');
-    game.load.image('alien', 'assets/alien.png');
+    //game.load.image('alien', 'assets/alien.png');
+    game.load.image('alien', 'assets/alien_test.png'); //Before animating the alien, it will be used only a static image for testing
 
 }
+
+const TOTAL_ALIENS = 50;
 
 var spaceField;
 var ship;
 var weapon;
 var cursors;
 var fireButton;
+
+var aliens;
 
 function create () {
 
@@ -39,30 +44,28 @@ function create () {
     //Creating Background
     spaceField = game.add.tileSprite(0, 0, 800, 600, 'space');
 
+    /*
+        This is the area in which the player's configurations are made    
+    */
+
     //Creating the player's ship
-    ship = game.add.sprite(10, 240, 'ship');
-    ship.scale.setTo(1,1);
-
-    game.physics.enable(ship, Phaser.Physics.ARCADE);
-
-    ship.body.drag.set(100);
-    ship.body.collideWorldBounds = true;
+    createShip();
 
     //Create the ship's weapon
-    weapon = game.add.weapon(5, 'bullet');
-
-    weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS //The bullet will be killed if it leaves the world area
-    weapon.bulletSpeed = 800;
-    weapon.fireRate = 100;
-
-    //Associate the weapon with the ship
-    weapon.trackSprite(ship, 90, 47, true);
+    createWeapon();
 
     //Create the movement keys
     cursors = game.input.keyboard.createCursorKeys();
 
     //Create the fire button
     fireButton = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+
+    /*
+        This is the area in which the enemies are configured
+    */
+
+    //Create the enemies
+    createSmallAliens();
 }
 
 function update () {
@@ -78,9 +81,6 @@ function update () {
     } 
     else if (cursors.down.isDown) {
         ship.body.velocity.y = 300;
-    } else {
-        ship.animations.stop();
-        ship.body.acceleration.set(0);
     }
 
     // //Check if the user is trying to shoot
@@ -88,10 +88,70 @@ function update () {
         weapon.fire();
     }
 
+    /* Creating the overlaps */
+
+    //If the bullets touch the aliens, both os them will be KILLED!
+    game.physics.arcade.overlap(weapon.bullets, aliens, killAlien, null, this);
 }
 
 function render () {
     // weapon.debug();
+}
+
+//Creates the little green aliens, the initial enemies
+function createSmallAliens() {
+    aliens = game.add.group();
+    aliens.enableBody = true;
+
+    game.physics.enable(aliens, Phaser.Physics.ARCADE);
+
+    for (var i = 0; i < TOTAL_ALIENS; i++) {
+
+        //Creates coordinates 50px smaller than the game world dimensions (so the aliens can fit well on the screen)
+        var x = Math.random() * 750;
+        var y = Math.random() * 550;
+
+        /* If the x is too small, the alien might collide with the ship the moment it appears on the screen.
+        That's the reason we added 120px to it.*/
+
+        if (x < 120) {
+            x += 120;
+        }
+
+        var alien = aliens.create( x, y, 'alien');
+        alien.name = 'alien' + i;
+
+        alien.body.velocity.x = Math.random() * -50;
+
+        //The aliens scale will vary a little, so there will be ones bigger than others
+        var rand = game.rnd.realInRange(0.2, 0.4);
+        alien.scale.setTo(rand, rand);
+    }
+}
+
+function createShip() {
+    ship = game.add.sprite(10, 240, 'ship');
+
+    game.physics.enable(ship, Phaser.Physics.ARCADE);
+
+    ship.body.collideWorldBounds = true;
+}
+
+function createWeapon() {
+    weapon = game.add.weapon(6, 'bullet');
+
+    weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS //The bullet will be killed if it leaves the world area
+    weapon.bulletSpeed = 800;
+    weapon.fireRate = 100;
+
+    //Associate the weapon with the ship
+    weapon.trackSprite(ship, 90, 47, true);
+}
+
+//Removes both the enemy's and the bullet's sprite off of the screen, when the enemy is shot
+function killAlien (bullet, enemy) {
+    bullet.kill();
+    enemy.kill();
 }
 
 </script>
