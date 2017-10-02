@@ -26,15 +26,18 @@ function preload () {
 
 }
 
-const TOTAL_ALIENS = 50;
-
 var spaceField;
 var ship;
 var weapon;
 var cursors;
 var fireButton;
 
+const MIN_ENEMY_POSITION = 1200;
+
 var aliens;
+const TOTAL_SMALL_ALIENS = 150;
+const SMALL_ALIEN_SPEED_MODIFIER = -300;
+const SMALL_ALIEN_MIN_SPEED = -150;
 
 function create () {
 
@@ -90,7 +93,7 @@ function update () {
 
     /* Creating the overlaps */
 
-    //If the bullets touch the aliens, both os them will be KILLED!
+    //If the bullets touch the aliens, both of them will be KILLED!
     game.physics.arcade.overlap(weapon.bullets, aliens, killAlien, null, this);
 }
 
@@ -105,23 +108,27 @@ function createSmallAliens() {
 
     game.physics.enable(aliens, Phaser.Physics.ARCADE);
 
-    for (var i = 0; i < TOTAL_ALIENS; i++) {
+    for (var i = 0; i < TOTAL_SMALL_ALIENS; i++) {
 
         //Creates coordinates 50px smaller than the game world dimensions (so the aliens can fit well on the screen)
-        var x = Math.random() * 750;
+        var x = Math.random() * 7500;
         var y = Math.random() * 550;
 
-        /* If the x is too small, the alien might collide with the ship the moment it appears on the screen.
-        That's the reason we added 120px to it.*/
-
-        if (x < 120) {
-            x += 120;
+        //Defines a minimum starting position
+        if (x < MIN_ENEMY_POSITION) {
+            x += MIN_ENEMY_POSITION;
         }
 
-        var alien = aliens.create( x, y, 'alien');
+        //Creates the alien based on the x and y. The last parameter is the spacing between each alien
+        var alien = aliens.create( x, y, 'alien', game.rnd.integerInRange(0, 36));
         alien.name = 'alien' + i;
 
-        alien.body.velocity.x = Math.random() * -50;
+        alien.body.velocity.x = Math.random() * SMALL_ALIEN_SPEED_MODIFIER;
+
+        //Defines a minimun velocity
+        if ( alien.body.velocity.x > SMALL_ALIEN_MIN_SPEED) {
+            alien.body.velocity.x = SMALL_ALIEN_MIN_SPEED;            
+        }
 
         //The aliens scale will vary a little, so there will be ones bigger than others
         var rand = game.rnd.realInRange(0.2, 0.4);
