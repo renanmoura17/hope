@@ -101,6 +101,9 @@ function update () {
 
     //If the bullets touch the aliens, both of them will be KILLED!
     game.physics.arcade.overlap(weapon.bullets, aliens, killEnemy, null, this);
+
+    //If the aliens touch the ship, the player is killed
+    game.physics.arcade.overlap(aliens, ship, killPlayer, null, this);
 }
 
 function render () {
@@ -185,6 +188,14 @@ function killEnemy (bullet, enemy) {
     bullet.kill();
     enemy.kill();
     updateScore();
+}
+
+//Removes the ship's sprite off of the screen, when an enemy touches it
+function killPlayer (ship) {
+    ship.kill();
+
+    //Stop game and tell the user he lost
+
 }
 
 </script>
