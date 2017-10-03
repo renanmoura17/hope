@@ -3,6 +3,7 @@
 <head> 
 	<meta charset="UTF-8" />
 	<title>Hope</title>
+    <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
     <script src="phaser/phaser.min.js"></script>
     <style type="text/css">
         body {
@@ -27,6 +28,8 @@ function preload () {
 }
 
 var spaceField;
+var score = 0;
+var scoreText;
 var ship;
 var weapon;
 var cursors;
@@ -46,6 +49,9 @@ function create () {
 
     //Creating Background
     spaceField = game.add.tileSprite(0, 0, 800, 600, 'space');
+
+    //Creating score
+    createScore();
 
     /*
         This is the area in which the player's configurations are made    
@@ -94,7 +100,7 @@ function update () {
     /* Creating the overlaps */
 
     //If the bullets touch the aliens, both of them will be KILLED!
-    game.physics.arcade.overlap(weapon.bullets, aliens, killAlien, null, this);
+    game.physics.arcade.overlap(weapon.bullets, aliens, killEnemy, null, this);
 }
 
 function render () {
@@ -136,6 +142,17 @@ function createSmallAliens() {
     }
 }
 
+//Creates the score's text on the screen
+function createScore() {
+
+    scoreText = game.add.text (16, 16, "Score: " + score, {
+        font: "35px VT323, monospace",
+        fill: "white",
+        align: "center"
+    });
+}
+
+//Creates H.O.P.E., the ship
 function createShip() {
     ship = game.add.sprite(10, 240, 'ship');
 
@@ -144,6 +161,7 @@ function createShip() {
     ship.body.collideWorldBounds = true;
 }
 
+//Creates a weapon. This function will be improved, so it can be generic enough to generate many weapon types
 function createWeapon() {
     weapon = game.add.weapon(6, 'bullet');
 
@@ -155,10 +173,18 @@ function createWeapon() {
     weapon.trackSprite(ship, 90, 47, true);
 }
 
+//Updates the score as the enemies are killed
+function updateScore () {
+ 
+    score += 100;
+    scoreText.setText("Score: " + score);
+}
+
 //Removes both the enemy's and the bullet's sprite off of the screen, when the enemy is shot
-function killAlien (bullet, enemy) {
+function killEnemy (bullet, enemy) {
     bullet.kill();
     enemy.kill();
+    updateScore();
 }
 
 </script>
