@@ -5,6 +5,8 @@
 	<title>Hope</title>
     <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
     <script src="phaser/phaser.min.js"></script>
+    <script src="js/Ship.js"></script>
+    <script src="js/Weapon.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -32,8 +34,6 @@ var score = 0;
 var scoreText;
 var ship;
 var weapon;
-var cursors;
-var fireButton;
 
 const MIN_ENEMY_POSITION = 1200;
 
@@ -57,17 +57,13 @@ function create () {
         This is the area in which the player's configurations are made    
     */
 
-    //Creating the player's ship
-    createShip();
+    //Creates the player's ship
+    ship = new Ship(game);
+    ship.create();
 
-    //Create the ship's weapon
-    createWeapon();
-
-    //Create the movement keys
-    cursors = game.input.keyboard.createCursorKeys();
-
-    //Create the fire button
-    fireButton = game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+    //Creates the ship's weapon
+    weapon = new Weapon(game);
+    weapon.create(6, 'bullet', Phaser.Weapon.KILL_WORLD_BOUNDS, 800, 100, ship.sprite, 90, 47);
 
     /*
         This is the area in which the enemies are configured
@@ -82,28 +78,8 @@ function update () {
     //Scroll the background
     spaceField.tilePosition.x += -10;
 
-    //Define the keyboard commands
-    ship.body.velocity.y = 0
-
-    if (cursors.up.isDown) {
-        ship.body.velocity.y = -300;
-    } 
-    else if (cursors.down.isDown) {
-        ship.body.velocity.y = 300;
-    }
-
-    // //Check if the user is trying to shoot
-    if (fireButton.isDown) {
-        weapon.fire();
-    }
-
-    /* Creating the overlaps */
-
-    //If the bullets touch the aliens, both of them will be KILLED!
-    game.physics.arcade.overlap(weapon.bullets, aliens, killEnemy, null, this);
-
-    //If the aliens touch the ship, the player is killed
-    game.physics.arcade.overlap(aliens, ship, killPlayer, null, this);
+    ship.update(aliens);
+    weapon.update(ship.fireButton, aliens);
 }
 
 function render () {
@@ -155,47 +131,11 @@ function createScore() {
     });
 }
 
-//Creates H.O.P.E., the ship
-function createShip() {
-    ship = game.add.sprite(10, 240, 'ship');
-
-    game.physics.enable(ship, Phaser.Physics.ARCADE);
-
-    ship.body.collideWorldBounds = true;
-}
-
-//Creates a weapon. This function will be improved, so it can be generic enough to generate many weapon types
-function createWeapon() {
-    weapon = game.add.weapon(6, 'bullet');
-
-    weapon.bulletKillType = Phaser.Weapon.KILL_WORLD_BOUNDS //The bullet will be killed if it leaves the world area
-    weapon.bulletSpeed = 800;
-    weapon.fireRate = 100;
-
-    //Associate the weapon with the ship
-    weapon.trackSprite(ship, 90, 47, true);
-}
-
 //Updates the score as the enemies are killed
 function updateScore () {
  
     score += 100;
     scoreText.setText("Score: " + score);
-}
-
-//Removes both the enemy's and the bullet's sprite off of the screen, when the enemy is shot
-function killEnemy (bullet, enemy) {
-    bullet.kill();
-    enemy.kill();
-    updateScore();
-}
-
-//Removes the ship's sprite off of the screen, when an enemy touches it
-function killPlayer (ship) {
-
-    //Count the number of lives. If the player has no more lives, stop game and tell the player he lost
-
-    ship.kill();
 }
 
 </script>
