@@ -44,15 +44,16 @@ Ship.prototype.update = function(aliens) {
 }
 
 //Removes the ship's sprite off of the screen, when an enemy touches it
-function killPlayer () {
+// function killPlayer () {
 
-    //Count the number of lives. If the player has no more lives, stop game and tell the player he lost
-    if ( this.lifebar.length >= 0 ) {
-    
-        this.lifebar.length--;
+//     //Count the number of lives. If the player has no more lives, stop game and tell the player he lost
+//     if ( this.lifebar.length >= 0 ) {
 
-    } else {
-        this.sprite.kill();
-    }
+//         var lastPosition = this.lifebar.length - 1;
+//         this.lifebar.removeChildAt (lastPosition);
 
-}
+//     } else {
+//         this.sprite.kill();
+//     }
+
+// }

@@ -19,6 +19,9 @@ Lifebar.prototype.create = function(lifebarSprite) {
     this.lifeSprite = this.lifeGroup.create(this.x, 10, lifebarSprite);
     this.lifeSpriteWidth = this.lifeSprite.width;
 
+    //Removes the initial sprite, as it was used only to get the width
+    this.lifeSprite.kill();
+
     //There will be three lives. 
     //For each one of them, draw it on the screen, subtract the X position from its size and then add another life
     for(var i = 0; i < this.totalLives; i++) {
@@ -28,5 +31,11 @@ Lifebar.prototype.create = function(lifebarSprite) {
 }
 
 Lifebar.prototype.update = function() {
+
+    //Get last life's position in the life group
+    var lastPosition = this.lifeGroup.length - 1;
+
+    //Remove the life from the group based on the acquired position
+    this.lifeGroup.removeChildAt (lastPosition);
 
 }
