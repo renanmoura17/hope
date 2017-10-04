@@ -5,8 +5,10 @@
 	<title>Hope</title>
     <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
     <script src="phaser/phaser.min.js"></script>
+    <script src="js/Score.js"></script>
     <script src="js/Ship.js"></script>
-    <script src="js/Weapon.js"></script>
+    <script src="js/PlayerWeapon.js"></script>
+    <script src="js/SmallAlien.js"></script>
     <style type="text/css">
         body {
             margin: 0;
@@ -35,23 +37,20 @@ var scoreText;
 var ship;
 var weapon;
 
-const MIN_ENEMY_POSITION = 1200;
-
-var aliens;
-const TOTAL_SMALL_ALIENS = 150;
-const SMALL_ALIEN_SPEED_MODIFIER = -300;
-const SMALL_ALIEN_MIN_SPEED = -150;
+var smallGreenAliens;
 
 function create () {
 
     //Initiating Arcade Physics
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    //Creating Background
+    //Creates the Background
     spaceField = game.add.tileSprite(0, 0, 800, 600, 'space');
 
-    //Creating score
-    createScore();
+    //Creates the score
+    // createScore();
+    score = new Score(game);
+    score.create();
 
     /*
         This is the area in which the player's configurations are made    
@@ -62,15 +61,16 @@ function create () {
     ship.create();
 
     //Creates the ship's weapon
-    weapon = new Weapon(game);
+    weapon = new PlayerWeapon(game);
     weapon.create(6, 'bullet', Phaser.Weapon.KILL_WORLD_BOUNDS, 800, 100, ship.sprite, 90, 47);
 
     /*
         This is the area in which the enemies are configured
     */
 
-    //Create the enemies
-    createSmallAliens();
+    //Creates the little green aliens, the initial enemies
+    smallGreenAliens = new SmallAlien(game);
+    smallGreenAliens.create( 150, 'alien', 100 );
 }
 
 function update () {
@@ -78,64 +78,12 @@ function update () {
     //Scroll the background
     spaceField.tilePosition.x += -10;
 
-    ship.update(aliens);
-    weapon.update(ship.fireButton, aliens);
+    ship.update(smallGreenAliens);
+    weapon.update(ship.fireButton, smallGreenAliens.alienGroup, smallGreenAliens.alienScoreValue, score);
 }
 
 function render () {
     // weapon.debug();
-}
-
-//Creates the little green aliens, the initial enemies
-function createSmallAliens() {
-    aliens = game.add.group();
-    aliens.enableBody = true;
-
-    game.physics.enable(aliens, Phaser.Physics.ARCADE);
-
-    for (var i = 0; i < TOTAL_SMALL_ALIENS; i++) {
-
-        //Creates coordinates 50px smaller than the game world dimensions (so the aliens can fit well on the screen)
-        var x = Math.random() * 7500;
-        var y = Math.random() * 550;
-
-        //Defines a minimum starting position
-        if (x < MIN_ENEMY_POSITION) {
-            x += MIN_ENEMY_POSITION;
-        }
-
-        //Creates the alien based on the x and y. The last parameter is the spacing between each alien
-        var alien = aliens.create( x, y, 'alien', game.rnd.integerInRange(0, 36));
-        alien.name = 'alien' + i;
-
-        alien.body.velocity.x = Math.random() * SMALL_ALIEN_SPEED_MODIFIER;
-
-        //Defines a minimun velocity
-        if ( alien.body.velocity.x > SMALL_ALIEN_MIN_SPEED) {
-            alien.body.velocity.x = SMALL_ALIEN_MIN_SPEED;            
-        }
-
-        //The aliens scale will vary a little, so there will be ones bigger than others
-        var rand = game.rnd.realInRange(0.2, 0.4);
-        alien.scale.setTo(rand, rand);
-    }
-}
-
-//Creates the score's text on the screen
-function createScore() {
-
-    scoreText = game.add.text (16, 16, "Score: " + score, {
-        font: "35px VT323, monospace",
-        fill: "white",
-        align: "center"
-    });
-}
-
-//Updates the score as the enemies are killed
-function updateScore () {
- 
-    score += 100;
-    scoreText.setText("Score: " + score);
 }
 
 </script>

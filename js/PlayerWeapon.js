@@ -1,11 +1,11 @@
 //
 // Class representing a weapon
 //
-function Weapon(game) {
+function PlayerWeapon(game) {
     this.weapon;
 }
 
-Weapon.prototype.create = function( totalBullets, bulletSprite, bulletKillType, bulletSpeed, fireRate, trackSprite, trackSpriteX, trackSpriteY ) {
+PlayerWeapon.prototype.create = function( totalBullets, bulletSprite, bulletKillType, bulletSpeed, fireRate, trackSprite, trackSpriteX, trackSpriteY ) {
     this.weapon = game.add.weapon(totalBullets, bulletSprite);
 
     this.weapon.bulletKillType = bulletKillType
@@ -16,7 +16,7 @@ Weapon.prototype.create = function( totalBullets, bulletSprite, bulletKillType, 
     this.weapon.trackSprite(trackSprite, trackSpriteX, trackSpriteY, true);
 }
 
-Weapon.prototype.update = function(fireButton, sprite) {
+PlayerWeapon.prototype.update = function(fireButton, alienSprite, alienScoreValue, score) {
 
     //Check if the player is trying to shoot
     if (fireButton.isDown) {
@@ -24,7 +24,12 @@ Weapon.prototype.update = function(fireButton, sprite) {
     }
 
     //If the bullets touch the given sprite, both of them will be KILLED!
-    game.physics.arcade.overlap(this.weapon.bullets, sprite, killSprite, null, this);
+    var killed = game.physics.arcade.overlap(this.weapon.bullets, alienSprite, killSprite, null, this);
+
+    //If the enemy has been killed, updates the score
+    if ( killed ) {
+        score.update(alienScoreValue);
+    }
     
 }
 
@@ -32,9 +37,4 @@ Weapon.prototype.update = function(fireButton, sprite) {
 function killSprite (bullet, sprite) {
     bullet.kill();
     sprite.kill();
-
-    // If the sprite is an instance of Alien, then update the score: the player killed one more!
-    // if ( sprite instanceof Alien ) {
-    //     updateScore();
-    // }
 }
