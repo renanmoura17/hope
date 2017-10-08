@@ -99,7 +99,7 @@ function render () {
 function killPlayer (alien) {
 
     //Count the number of lives. If the player has no more lives, stop the game and tell the player he lost
-    if ( ship.lifebar.lifeGroup.length > 0 ) {
+    if ( ship.lifebar.lifeGroup.length - 1 > 0 ) {
 
         //Updates the ship's lifebar
         ship.lifebar.update();
